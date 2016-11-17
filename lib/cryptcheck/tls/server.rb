@@ -199,7 +199,9 @@ module CryptCheck
 						@cert, @chain = ssl_client(method) { |s| [s.peer_cert, s.peer_cert_chain] }
 						Logger.debug { "Certificate #{@cert.subject}" }
 						break
-					rescue TLSException
+					rescue Timeout, TLSTimeout, ConnectionError, ::SystemCallError
+						raise
+					rescue
 					end
 				end
 				raise TLSNotAvailableException unless @cert
