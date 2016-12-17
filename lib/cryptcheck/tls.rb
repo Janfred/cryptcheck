@@ -16,16 +16,15 @@ module CryptCheck
 		end
 
 		def self.key_to_s(key)
-			type_color = case key.type
-							 when :ecc then { color: :green }
-							 when :dsa then { color: :red }
+			size, color = case key.type
+							 when :ecc
+								 ["#{key.group.curve_name} #{key.size}", { color: :green }]
+							 when :dh
+								 [key.size, { color: :yellow }]
+							 when :dsa
+								 [key.size, { color: :white, background: :red }]
 						 end
-			size_color = case key.status
-							when :error then { color: :white, background: :red }
-							when :warning then { color: :yellow }
-							when :success then { color: :green }
-						end
-			"#{key.type.to_s.upcase.colorize type_color} #{key.size.to_s.colorize size_color} bits"
+			"#{key.type.to_s.upcase.colorize color} #{size.to_s.colorize key.status} bits"
 		end
 	end
 end
