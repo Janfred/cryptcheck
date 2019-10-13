@@ -6,7 +6,7 @@ module CryptCheck
 			class Server < Tls::TcpServer
 				attr_reader :hsts
 
-				def initialize(hostname, family, ip, port=443)
+				def initialize(hostname, family, ip, port = 443)
 					super
 					fetch_hsts
 				end
@@ -42,9 +42,14 @@ module CryptCheck
 					!@hsts.nil?
 				end
 
-				LONG_HSTS = 6*30*24*60*60
+				LONG_HSTS = 6 * 30 * 24 * 60 * 60
+
 				def hsts_long?
 					hsts? and @hsts >= LONG_HSTS
+				end
+
+				def to_h
+					super.merge hsts: self.hsts
 				end
 			end
 		end

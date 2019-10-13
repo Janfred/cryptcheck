@@ -1,5 +1,6 @@
 require 'erb'
 require 'parallel'
+require 'resolv'
 
 module CryptCheck
 	module Tls

@@ -34,6 +34,22 @@ module CryptCheck
 				Logger.info { "Best practices : #{self.success.join(' ').colorize :green }" } unless self.success.empty?
 			end
 
+			def to_h
+				{
+						rank:    self.grade,
+						details: {
+								score:            self.score,
+								protocol:         self.protocol_score,
+								key_exchange:     self.key_exchange_score,
+								cipher_strengths: self.cipher_strengths_score
+						},
+						error:   self.error,
+						danger:  self.danger,
+						warning: self.warning,
+						success: self.success
+				}
+			end
+
 			private
 			def calculate_grade
 				@grade = case @score

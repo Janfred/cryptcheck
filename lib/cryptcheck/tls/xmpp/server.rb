@@ -8,14 +8,14 @@ module CryptCheck
 			class Server < Tls::TcpServer
 				attr_reader :domain
 
-				def initialize(hostname, family, ip, port=nil, domain: nil, type: :s2s)
+				def initialize(hostname, family, ip, port = nil, domain: nil, type: :s2s)
 					domain         ||= hostname
 					@type, @domain = type, domain
 					port           = case type
-										 when :s2s
-											 5269
-										 when :c2s
-											 5222
+									 when :s2s
+										 5269
+									 when :c2s
+										 5222
 									 end unless port
 					super hostname, family, ip, port
 					Logger.info { '' }
@@ -24,10 +24,10 @@ module CryptCheck
 
 				def ssl_connect(socket, context, method, &block)
 					type = case @type
-							   when :s2s then
-								   'jabber:server'
-							   when :c2s then
-								   'jabber:client'
+						   when :s2s then
+							   'jabber:server'
+						   when :c2s then
+							   'jabber:client'
 						   end
 					socket.puts "<?xml version='1.0' ?><stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='#{type}' to='#{@domain}' version='1.0'>"
 					response = ''
@@ -52,6 +52,10 @@ module CryptCheck
 
 				def required?
 					@required
+				end
+
+				def to_h
+					super.merge required: self.required?
 				end
 			end
 		end

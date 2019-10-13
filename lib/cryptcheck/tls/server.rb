@@ -6,7 +6,7 @@ module CryptCheck
 	module Tls
 		class Server
 			TCP_TIMEOUT       = 10
-			SSL_TIMEOUT       = 2*TCP_TIMEOUT
+			SSL_TIMEOUT       = 2 * TCP_TIMEOUT
 			EXISTING_METHODS  = %i(TLSv1_2 TLSv1_1 TLSv1 SSLv3 SSLv2)
 			SUPPORTED_METHODS = ::OpenSSL::SSL::SSLContext::METHODS
 			class TLSException < ::StandardError
@@ -113,7 +113,29 @@ module CryptCheck
 				supported_ciphers.all? { |c| c.pfs? }
 			end
 
+			def to_h
+				{
+						key:       key_to_json(self.key),
+						dh:        self.dh.collect { |k| key_to_json k },
+						protocols: self.supported_protocols,
+						ciphers:   self.supported_ciphers.collect do |c|
+							{
+									protocol: c.protocol,
+									name:     c.name,
+									size:     c.size,
+									dh:       key_to_json(c.dh)
+							}
+						end
+
+				}
+			end
+
 			private
+
+			def key_to_json(key)
+				key.nil? ? nil : { type: key.type, size: key.size, rsa_size: key.rsa_equivalent_size }
+			end
+
 			def name
 				name = "#@ip:#@port"
 				name += " [#@hostname]" if @hostname
@@ -161,17 +183,17 @@ module CryptCheck
 					retry
 				rescue ::OpenSSL::SSL::SSLError => e
 					case e
-						when /state=SSLv2 read server hello A$/,
-								/state=SSLv3 read server hello A: wrong version number$/
-							raise MethodNotAvailable, e
-						when /state=error: no ciphers available$/,
-								/state=SSLv3 read server hello A: sslv3 alert handshake failure$/
-							raise CipherNotAvailable, e
+					when /state=SSLv2 read server hello A$/,
+							/state=SSLv3 read server hello A: wrong version number$/
+						raise MethodNotAvailable, e
+					when /state=error: no ciphers available$/,
+							/state=SSLv3 read server hello A: sslv3 alert handshake failure$/
+						raise CipherNotAvailable, e
 					end
 				rescue SystemCallError => e
 					case e
-						when /^Connection reset by peer$/
-							raise MethodNotAvailable, e
+					when /^Connection reset by peer$/
+						raise MethodNotAvailable, e
 					end
 				ensure
 					ssl_socket.close
@@ -297,6 +319,7 @@ module CryptCheck
 
 		class TcpServer < Server
 			private
+
 			def sock_type
 				::Socket::SOCK_STREAM
 			end
@@ -304,6 +327,7 @@ module CryptCheck
 
 		class UdpServer < Server
 			private
+
 			def sock_type
 				::Socket::SOCK_DGRAM
 			end
