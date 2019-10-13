@@ -2,7 +2,7 @@ require 'colorize'
 require 'ipaddr'
 require 'timeout'
 require 'yaml'
-require 'cryptcheck/tls/fixture'
+Dir[File.join __dir__, 'cryptcheck', 'fixtures', '*.rb'].each { |f| require f }
 
 module CryptCheck
 	MAX_ANALYSIS_DURATION = 120
@@ -72,6 +72,7 @@ module CryptCheck
 	end
 
 	private
+
 	def self.addresses(host)
 		begin
 			ip = IPAddr.new host
@@ -116,8 +117,8 @@ module CryptCheck
 		addresses = begin
 			addresses host
 		rescue ::SocketError => e
-			Logger::error e
-			key = [host, nil, port]
+			Logger.error e
+			key   = [host, nil, port]
 			error = AnalysisFailure.new "Unable to resolve #{host}"
 			return { key => error }
 		end
@@ -146,9 +147,9 @@ module CryptCheck
 		results.each do |d, _|
 			results[d].sort! do |a, b|
 				cmp = score(a) <=> score(b)
-				if cmp == 0
+				if cmp.zero?
 					cmp = b.score <=> a.score
-					if cmp == 0
+					if cmp.zero?
 						cmp = a.server.hostname <=> b.server.hostname
 					end
 				end
@@ -174,6 +175,7 @@ module CryptCheck
 	end
 
 	private
+
 	SCORES = %w(A+ A A- B C D E F T M X)
 
 	def self.score(a)
