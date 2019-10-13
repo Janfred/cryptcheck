@@ -30,9 +30,11 @@ Gem::Specification.new do |spec|
 	spec.add_development_dependency 'rake', '~> 11.2', '>= 11.2.2'
 	spec.add_development_dependency 'rspec', '~> 3.2', '>= 3.2.0'
 
-	spec.add_dependency 'httparty', '~> 0.13', '>= 0.13.3'
-	spec.add_dependency 'nokogiri', '~> 1.6', '>= 1.6.6'
-	spec.add_dependency 'parallel', '~> 1.3', '>= 1.3.4'
-	spec.add_dependency 'ruby-progressbar', '~> 1.7', '>= 1.7.1'
-	spec.add_dependency 'colorize', '~> 0.7', '>= 0.7.7'
+	spec.add_dependency 'httparty'
+	spec.add_dependency 'nokogiri'
+	spec.add_dependency 'parallel'
+	spec.add_dependency 'ruby-progressbar'
+	spec.add_dependency 'colorize'
+	spec.add_dependency 'awesome_print'
+	spec.add_dependency 'thor'
 end

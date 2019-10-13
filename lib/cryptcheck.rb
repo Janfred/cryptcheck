@@ -75,41 +75,52 @@ module CryptCheck
 
 	def self.addresses(host)
 		begin
-			ip = IPAddr.new host
-			return [[ip.family, ip.to_s, nil]]
-		rescue IPAddr::InvalidAddressError
+			begin
+				ip = IPAddr.new host
+				return [[ip.family, ip.to_s, nil]]
+			rescue IPAddr::InvalidAddressError
+			end
+			::Addrinfo.getaddrinfo(host, nil, nil, :STREAM)
+					.collect { |a| [a.afamily, a.ip_address, host] }
+		end.reject do |family, *_|
+			(ENV['DISABLE_IPv6'] && family == Socket::AF_INET6) ||
+					(ENV['DISABLE_IPv4'] && family == Socket::AF_INET)
 		end
-		::Addrinfo.getaddrinfo(host, nil, nil, :STREAM)
-				.collect { |a| [a.afamily, a.ip_address, host] }
+	end
+
+	def self.analyze_address(host, family, ip, port, server, grade, *args, **kargs)
+		a = [host, family, ip, port, *args]
+		::Timeout::timeout MAX_ANALYSIS_DURATION do
+			s = if kargs.empty?
+					server.new *a
+				else
+					server.new *a, **kargs
+				end
+			if grade
+				g = grade.new s
+				Logger.info { '' }
+				g.display
+				g
+			else
+				s
+			end
+		end
+	rescue ::Timeout::Error
+		e = "Too long analysis (max #{MAX_ANALYSIS_DURATION.humanize})"
+		Logger.error e
+		AnalysisFailure.new e
+	rescue => e
+		Logger.error e
+		AnalysisFailure.new e
 	end
 
 	def self.analyze_addresses(host, addresses, port, server, grade, *args, **kargs)
 		first = true
 		addresses.collect do |family, ip|
 			first ? (first = false) : Logger.info { '' }
-			key = [host, ip, port]
-			a   = [host, family, ip, port, *args]
-			begin
-				::Timeout::timeout MAX_ANALYSIS_DURATION do
-					s = if kargs.empty?
-							server.new *a
-						else
-							server.new *a, **kargs
-						end
-					if grade
-						g = grade.new s
-						Logger.info { '' }
-						g.display
-						[key, g]
-					else
-						[key, s]
-					end
-				end
-			rescue => e
-				e = "Too long analysis (max #{MAX_ANALYSIS_DURATION.humanize})" if e.message == 'execution expired'
-				Logger.error e
-				[key, AnalysisFailure.new(e)]
-			end
+			key    = [host, ip, port]
+			result = analyze_address host, family, ip, port, server, grade, *args, **kargs
+			[key, result]
 		end.to_h
 	end
 
