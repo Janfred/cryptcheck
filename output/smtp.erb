@@ -56,7 +56,7 @@
 							</tr>
 							<tr>
 								<td>Key size (bits)</td>
-								<td class="warning">SHA1 sig</td>
+								<td class="danger">SHA1 sig</td>
 
 								<td class="critical">SSL v2</td>
 								<td class="critical">SSL v3</td>
@@ -104,7 +104,7 @@
 									<%= "#{key.size} (#{key.type.to_s.upcase})" %>
 									<span class="sr-only">(<%= key.size < 2048 ? '☹' : '☺' %>)</span>
 								</td>
-								<td class="<%= s.sha1_sig? ? :warning : :success %>">
+								<td class="<%= s.sha1_sig? ? :danger : :success %>">
 									<%= s.sha1_sig? ? '✓' : '✗' %>
 									<span class="sr-only">(<%= s.sha1_sig? ? '☹' : '☺' %>)</span>
 								</td>

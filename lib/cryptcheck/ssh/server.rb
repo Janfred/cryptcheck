@@ -13,8 +13,8 @@ module CryptCheck
 					'ecdh-sha2-nistp384'                   => nil,		# NIST
 					'ecdh-sha2-nistp256'                   => nil,		# NIST
 					'diffie-hellman-group-exchange-sha256' => :green,	# DLP (PFS)
-					'diffie-hellman-group-exchange-sha1'   => :yellow,	# DLP (PFS)
-					'diffie-hellman-group14-sha1'          => :yellow,	# 2048 bits < 3072 bits
+					'diffie-hellman-group-exchange-sha1'   => :red, 	# DLP (PFS)
+					'diffie-hellman-group14-sha1'          => :red, 	# 2048 bits < 3072 bits
 					'diffie-hellman-group1-sha1'           => :red		# 768 bits < 1024 bits
 			}
 
@@ -41,10 +41,10 @@ module CryptCheck
 					'hmac-sha2-256-etm@openssh.com'  => :green,
 					'hmac-sha2-512'                  => nil,
 					'hmac-sha2-256'                  => nil,
-					'hmac-sha1-etm@openssh.com'      => :green,
-					'hmac-sha1'                      => nil,
-					'hmac-sha1-96-etm@openssh.com'   => :red,	# EXPORT
-					'hmac-sha1-96'                   => :red,	# EXPORT
+					'hmac-sha1-etm@openssh.com'      => :red,	# SHA1
+					'hmac-sha1'                      => :red,	# SHA1
+					'hmac-sha1-96-etm@openssh.com'   => :red,	# EXPORT, SHA1
+					'hmac-sha1-96'                   => :red,	# EXPORT, SHA1
 					'hmac-ripemd160-etm@openssh.com' => :green,
 					'hmac-ripemd160'                 => nil,
 					'hmac-md5-etm@openssh.com'       => :red,	# MD5

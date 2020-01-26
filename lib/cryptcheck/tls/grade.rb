@@ -87,12 +87,12 @@ module CryptCheck
 				ALL_ERROR
 			end
 
-			ALL_DANGER = %i()
+			ALL_DANGER = %i(sha1_sig)
 			def all_danger
 				ALL_DANGER
 			end
 
-			ALL_WARNING = %i(sha1_sig)
+			ALL_WARNING = %i()
 			def all_warning
 				ALL_WARNING
 			end
