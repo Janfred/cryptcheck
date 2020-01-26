@@ -40,7 +40,7 @@ build/openssl/: | $(OPENSSL_DIR)/
 $(OPENSSL_DIR)/: build/$(OPENSSL_NAME).tar.gz build/chacha-poly.patch
 	tar -C build -xf "build/$(OPENSSL_NAME).tar.gz"
 	patch -d "$(OPENSSL_DIR)" -p1 < build/chacha-poly.patch
-	patch -d "$(OPENSSL_DIR)" -p1 < patches/openssl/disable_digest_check.patch
+	for p in patches/openssl/*.patch; do patch -d "$@" -p1 < "$$p"; done
 
 build/openssl/Makefile: | build/openssl/
 	cd build/openssl/ && ./config enable-ssl2 enable-ssl3 enable-ssl3-method enable-md2 enable-rc5 enable-weak-ssl-ciphers enable-shared
